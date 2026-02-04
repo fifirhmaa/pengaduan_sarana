@@ -3,7 +3,7 @@ import 'package:ukk_pengaduan/features/auth/presentation/pages/auth_gate.dart';
 
 import 'core/pocketbase_client.dart';
 import 'features/aspirasi/presentation/pages/admin/admin_aspirasi_page.dart';
-import 'features/aspirasi/presentation/pages/admin/cek_statur_page.dart';
+import 'features/aspirasi/presentation/pages/admin/cek_status_page.dart';
 import 'features/auth/presentation/pages/login_admin_page.dart';
 
 Future<void> main() async {

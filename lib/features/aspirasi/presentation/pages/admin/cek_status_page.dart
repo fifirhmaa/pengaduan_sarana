@@ -23,7 +23,7 @@ class _CekStatusPageState extends State<CekStatusPage> {
 
     try {
       final data =
-          await service.getAspirasiByNis(int.parse(nisController.text));
+          await service.getAspirasiByNis(nisController.text);
 
       setState(() {
         list = data;

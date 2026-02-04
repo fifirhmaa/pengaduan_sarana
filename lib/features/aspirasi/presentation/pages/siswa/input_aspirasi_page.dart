@@ -128,8 +128,7 @@ class _InputAspirasiPageState extends State<InputAspirasiPage> {
 
     try {
       // 1. cari siswa
-      final siswa = await aspirasiService.getSiswaByNis(
-        int.parse(nisController.text),
+      final siswa = await aspirasiService.getSiswaByNis(nisController.text
       );
 
       if (siswa == null) {
@@ -138,7 +137,7 @@ class _InputAspirasiPageState extends State<InputAspirasiPage> {
 
       // 2. kirim aspirasi
       await aspirasiService.createAspirasi(
-        nis: int.parse(nisController.text),
+        nis: nisController.text,
         kategoriId: selectedKategori!,
         lokasi: lokasiController.text,
         keterangan: keteranganController.text,
