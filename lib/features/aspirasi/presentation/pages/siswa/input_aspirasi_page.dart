@@ -21,7 +21,6 @@ class _InputAspirasiPageState extends State<InputAspirasiPage> {
 
   bool isLoading = false;
 
-  // 🔹 KATEGORI
   List<RecordModel> kategoriList = [];
   String? selectedKategori;
 
@@ -44,7 +43,6 @@ class _InputAspirasiPageState extends State<InputAspirasiPage> {
               ),
               const SizedBox(height: 12),
 
-              // 🔽 DROPDOWN KATEGORI
               DropdownButtonFormField<String>(
                 value: selectedKategori,
                 decoration: const InputDecoration(labelText: 'Kategori'),
@@ -127,15 +125,6 @@ class _InputAspirasiPageState extends State<InputAspirasiPage> {
     setState(() => isLoading = true);
 
     try {
-      // 1. cari siswa
-      final siswa = await aspirasiService.getSiswaByNis(nisController.text
-      );
-
-      if (siswa == null) {
-        throw 'Siswa dengan NIS tersebut tidak ditemukan';
-      }
-
-      // 2. kirim aspirasi
       await aspirasiService.createAspirasi(
         nis: nisController.text,
         kategoriId: selectedKategori!,
@@ -147,9 +136,7 @@ class _InputAspirasiPageState extends State<InputAspirasiPage> {
         const SnackBar(content: Text('Aspirasi berhasil dikirim')),
       );
 
-      nisController.clear();
-      lokasiController.clear();
-      keteranganController.clear();
+      _formKey.currentState!.reset();
       selectedKategori = null;
     } catch (e) {
       ScaffoldMessenger.of(

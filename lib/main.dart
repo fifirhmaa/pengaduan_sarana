@@ -9,7 +9,6 @@ import 'features/auth/presentation/pages/login_admin_page.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 🔌 TEST KONEKSI POCKETBASE
   try {
     final list = await pb.collection('kategori').getList();
     debugPrint('KONEK: ${list.items.length}');

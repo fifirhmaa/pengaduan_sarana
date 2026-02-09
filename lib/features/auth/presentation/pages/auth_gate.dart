@@ -11,12 +11,10 @@ class AuthGate extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = pb.authStore.model;
 
-    // BELUM LOGIN
     if (user == null) {
       return const LandingPage();
     }
 
-    // SUDAH LOGIN
     final role = user.data['role'];
 
     if (role == 'admin') {
