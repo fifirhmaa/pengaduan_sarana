@@ -127,7 +127,7 @@ class LandingPage extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      // TODO: route ke halaman riwayat
+                      Navigator.pushNamed(context, '/cek-status');
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
