@@ -78,23 +78,6 @@ class _InputAspirasiPageState extends State<InputAspirasiPage> {
                         v == null || v.isEmpty ? 'NIS wajib diisi' : null,
                   ),
                   const SizedBox(height: 16),
-                  // Text('Kelas', style: TextStyle(fontWeight: FontWeight.w600)),
-                  // const SizedBox(height: 4),
-                  // TextFormField(
-                  //   controller: lokasiController,
-                  //   decoration: InputDecoration(
-                  //     hintText: 'Masukan kelas anda',
-                  //     filled: true,
-                  //     fillColor: Colors.grey[200],
-                  //     border: OutlineInputBorder(
-                  //       borderRadius: BorderRadius.circular(8),
-                  //       borderSide: BorderSide.none,
-                  //     ),
-                  //   ),
-                  //   validator: (v) =>
-                  //       v == null || v.isEmpty ? 'Kelas wajib diisi' : null,
-                  // ),
-                  const SizedBox(height: 16),
                   Text(
                     'Kategori',
                     style: TextStyle(fontWeight: FontWeight.w600),
@@ -260,16 +243,15 @@ class _InputAspirasiPageState extends State<InputAspirasiPage> {
         kategoriId: selectedKategori!,
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Aspirasi berhasil dikirim')),
-      );
-
-      // reset form
+      // Reset form
       _formKey.currentState!.reset();
       nisController.clear();
       lokasiController.clear();
       keteranganController.clear();
       setState(() => selectedKategori = null);
+
+      // Tampilkan dialog sukses
+      _showSuccessDialog();
     } catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -277,5 +259,135 @@ class _InputAspirasiPageState extends State<InputAspirasiPage> {
     }
 
     setState(() => isLoading = false);
+  }
+
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: Container(
+            width: 350,
+            padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Icon sukses (bisa pakai assets atau Icon)
+                Container(
+                  height: 120,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color(0xFF0B5C6B).withOpacity(0.1),
+                  ),
+                  child: const Icon(
+                    Icons.check_circle_outline,
+                    size: 80,
+                    color: Color(0xFF0B5C6B),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  'Aspirasi berhasil dikirim!',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Terimakasih atas aspirasi anda. Kami akan segera menindak lanjutinya.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+                const SizedBox(height: 32),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0B5C6B),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 16,
+                      horizontal: 8,
+                    ),
+                    minimumSize: const Size(double.infinity, 50),
+                  ),
+                  icon: const Icon(Icons.history, color: Colors.white),
+                  label: const Text(
+                    'Lihat Riwayat Aspirasi',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context); // Tutup dialog
+                    // TODO: Navigasi ke riwayat aspirasi
+                  },
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Color(0xFF0B5C6B)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 16,
+                      horizontal: 8,
+                    ),
+                    minimumSize: const Size(double.infinity, 50),
+                  ),
+                  icon: const Icon(Icons.send, color: Color(0xFF0B5C6B)),
+                  label: const Text(
+                    'Kirim Aspirasi Lain',
+                    style: TextStyle(color: Color(0xFF0B5C6B)),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context); // Tutup dialog
+                    // Tetap di halaman ini untuk kirim aspirasi lain
+                  },
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Color(0xFF0B5C6B)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 16,
+                      horizontal: 8,
+                    ),
+                    minimumSize: const Size(double.infinity, 50),
+                  ),
+                  icon: const Icon(Icons.home, color: Color(0xFF0B5C6B)),
+                  label: const Text(
+                    'Kembali ke Beranda',
+                    style: TextStyle(color: Color(0xFF0B5C6B)),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.popUntil(context, (route) => route.isFirst);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }
