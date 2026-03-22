@@ -127,7 +127,7 @@ class LandingPage extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      Navigator.pushNamed(context, '/cek-status');
+                      Navigator.pushNamed(context, '/riwayat-aspirasi');
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,

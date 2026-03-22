@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import '../../../data/siswa/aspirasi_siswa_services.dart';
+import 'success_aspirasi_page.dart';
 
 class InputAspirasiPage extends StatefulWidget {
   const InputAspirasiPage({super.key});
@@ -173,7 +174,7 @@ class _InputAspirasiPageState extends State<InputAspirasiPage> {
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 16),
                           ),
-                          onPressed: isLoading ? null : submit,
+                          onPressed: _submit,
                           child: isLoading
                               ? const SizedBox(
                                   width: 24,
@@ -216,15 +217,20 @@ class _InputAspirasiPageState extends State<InputAspirasiPage> {
   Future<void> loadKategori() async {
     try {
       final result = await service.getKategori();
+      if (!mounted) return;
       setState(() {
         kategoriList = result;
       });
     } catch (e) {
-      debugPrint('Gagal load kategori: $e');
+      if (!mounted) return;
     }
   }
 
-  Future<void> submit() async {
+  void _showSuccessAspirasiModal() {
+    showSuccessAspirasiModal(context);
+  }
+
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (selectedKategori == null) {
       ScaffoldMessenger.of(
@@ -250,144 +256,16 @@ class _InputAspirasiPageState extends State<InputAspirasiPage> {
       keteranganController.clear();
       setState(() => selectedKategori = null);
 
-      // Tampilkan dialog sukses
-      _showSuccessDialog();
+      // Show success dialog
+      _showSuccessAspirasiModal();
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Gagal kirim aspirasi: $e')));
+    } finally {
+      if (!mounted) return;
+      setState(() => isLoading = false);
     }
-
-    setState(() => isLoading = false);
-  }
-
-  void _showSuccessDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          child: Container(
-            width: 350,
-            padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 24,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Icon sukses (bisa pakai assets atau Icon)
-                Container(
-                  height: 120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFF0B5C6B).withOpacity(0.1),
-                  ),
-                  child: const Icon(
-                    Icons.check_circle_outline,
-                    size: 80,
-                    color: Color(0xFF0B5C6B),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                const Text(
-                  'Aspirasi berhasil dikirim!',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Terimakasih atas aspirasi anda. Kami akan segera menindak lanjutinya.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
-                ),
-                const SizedBox(height: 32),
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0B5C6B),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 8,
-                    ),
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
-                  icon: const Icon(Icons.history, color: Colors.white),
-                  label: const Text(
-                    'Lihat Riwayat Aspirasi',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context); // Tutup dialog
-                    // TODO: Navigasi ke riwayat aspirasi
-                  },
-                ),
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFF0B5C6B)),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 8,
-                    ),
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
-                  icon: const Icon(Icons.send, color: Color(0xFF0B5C6B)),
-                  label: const Text(
-                    'Kirim Aspirasi Lain',
-                    style: TextStyle(color: Color(0xFF0B5C6B)),
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context); // Tutup dialog
-                    // Tetap di halaman ini untuk kirim aspirasi lain
-                  },
-                ),
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFF0B5C6B)),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 8,
-                    ),
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
-                  icon: const Icon(Icons.home, color: Color(0xFF0B5C6B)),
-                  label: const Text(
-                    'Kembali ke Beranda',
-                    style: TextStyle(color: Color(0xFF0B5C6B)),
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.popUntil(context, (route) => route.isFirst);
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 }

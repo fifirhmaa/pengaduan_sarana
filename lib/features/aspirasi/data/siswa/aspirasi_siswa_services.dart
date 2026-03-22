@@ -153,6 +153,32 @@ class AspirasiSiswaService {
     }
   }
 
+  // ================= SUBSCRIBE =================
+  Future<void> subscribeAspirasi({
+    required String nis,
+    required Function(RecordModel) onUpdate,
+    required Function(String) onDelete,
+  }) async {
+    await pb.collection('aspirasi').subscribe(
+      '*',
+      (e) {
+        final recordNis = e.record?.data['nis']?.toString();
+        if (recordNis != nis) return;
+
+        if (e.action == 'delete') {
+          onDelete(e.record!.id);
+        } else {
+          onUpdate(e.record!);
+        }
+      },
+      filter: 'nis = ${int.tryParse(nis) ?? 0}',
+    );
+  }
+
+  Future<void> unsubscribe() async {
+    await pb.collection('aspirasi').unsubscribe('*');
+  }
+
   // ================= UPDATE STATUS =================
   Future<void> updateStatus({
     required String aspirasiId,
