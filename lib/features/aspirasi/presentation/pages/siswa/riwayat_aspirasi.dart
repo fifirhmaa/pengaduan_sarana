@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import '../../../data/siswa/aspirasi_siswa_services.dart';
+import 'detail_aspirasi_modal.dart';
 
 class RiwayatAspirasi extends StatefulWidget {
   const RiwayatAspirasi({super.key});
@@ -155,101 +156,104 @@ class _RiwayatAspirasiState extends State<RiwayatAspirasi> {
                       final lokasi = a.data['lokasi'] ?? '-';
                       final keterangan = a.data['keterangan'] ?? '-';
                       final tanggal = _formatDate(a.created);
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: getStatusColor(status).withOpacity(0.4),
-                            width: 1.5,
+                      return GestureDetector(
+                        onTap: () => showDetailAspirasiModal(context, a),
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: getStatusColor(status).withOpacity(0.4),
+                              width: 1.5,
+                            ),
                           ),
-                        ),
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 4,
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: getStatusColor(status),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  status,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
-                              decoration: BoxDecoration(
-                                color: getStatusColor(status),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                status,
+                              const SizedBox(height: 10),
+                              Text(
+                                keterangan,
                                 style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              keterangan,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.location_on,
-                                  size: 16,
-                                  color: Colors.grey,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  lokasi,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                const Icon(
-                                  Icons.calendar_today,
-                                  size: 16,
-                                  color: Colors.grey,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  tanggal,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            if (a.data['feedback'] != null &&
-                                a.data['feedback'].toString().isNotEmpty) ...[
-                              const Divider(height: 16),
+                              const SizedBox(height: 8),
                               Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const Icon(
-                                    Icons.feedback,
+                                    Icons.location_on,
                                     size: 16,
-                                    color: Colors.blue,
+                                    color: Colors.grey,
                                   ),
                                   const SizedBox(width: 4),
-                                  Expanded(
-                                    child: Text(
-                                      a.data['feedback'],
-                                      style: const TextStyle(fontSize: 13),
+                                  Text(
+                                    lokasi,
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.black54,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  const Icon(
+                                    Icons.calendar_today,
+                                    size: 16,
+                                    color: Colors.grey,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    tanggal,
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.black54,
                                     ),
                                   ),
                                 ],
                               ),
+                              if (a.data['feedback'] != null &&
+                                  a.data['feedback'].toString().isNotEmpty) ...[
+                                const Divider(height: 16),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Icon(
+                                      Icons.feedback,
+                                      size: 16,
+                                      color: Colors.blue,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Expanded(
+                                      child: Text(
+                                        a.data['feedback'],
+                                        style: const TextStyle(fontSize: 13),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ],
-                          ],
+                          ),
                         ),
                       );
                     },
@@ -274,7 +278,7 @@ class _RiwayatAspirasiState extends State<RiwayatAspirasi> {
       case 'Selesai':
         return Colors.green;
       case 'Proses':
-        return Colors.orange;
+        return const Color.fromARGB(255, 255, 210, 84);
       case 'Menunggu':
         return const Color(0xFF4FC3F7);
       default:
