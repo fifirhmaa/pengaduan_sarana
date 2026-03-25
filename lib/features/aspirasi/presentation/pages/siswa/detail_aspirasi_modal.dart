@@ -17,9 +17,11 @@ class DetailAspirasiModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final status = aspirasi.data['status'] ?? '-';
-    final keterangan = aspirasi.data['keterangan'] ?? '-';
     final lokasi = aspirasi.data['lokasi'] ?? '-';
+    final deskripsi = aspirasi.data['keterangan'] ?? '-';
     final feedback = aspirasi.data['feedback']?.toString() ?? '';
+    final nisn = aspirasi.data['nisn']?.toString() ?? '-';
+    final kelas = aspirasi.data['kelas']?.toString() ?? '-';
     final tanggal = _formatDate(aspirasi.created);
 
     // Kategori dari expand
@@ -30,184 +32,151 @@ class DetailAspirasiModal extends StatelessWidget {
     }
 
     return Dialog(
-      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       elevation: 0,
       backgroundColor: Colors.white,
       child: Container(
         width: double.infinity,
-        constraints: const BoxConstraints(maxHeight: 600),
+        constraints: const BoxConstraints(maxHeight: 680),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(height: 16),
-
             // Header
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.fromLTRB(20, 20, 12, 0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Detail Aspirasi',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Detail Aspirasi',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Informasi lengkap tentang aspirasi yang anda kirimkan',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey[500],
+                            height: 1.4,
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                      ],
                     ),
                   ),
                   IconButton(
                     onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close),
+                    icon: const Icon(Icons.close, size: 20),
                     style: IconButton.styleFrom(
                       backgroundColor: Colors.grey[100],
                       foregroundColor: Colors.black54,
+                      minimumSize: const Size(36, 36),
+                      padding: EdgeInsets.zero,
                     ),
                   ),
                 ],
               ),
             ),
 
-            const Divider(height: 24),
+            const SizedBox(height: 16),
+            const Divider(height: 1, thickness: 1),
 
             // Scrollable content
             Flexible(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 20,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Status badge
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: _getStatusColor(status),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            status,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                            ),
+                    // Status section
+                    _SectionLabel(label: 'Status'),
+                    const SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 7,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _getStatusColor(status),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          status,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Keterangan/Judul
-                    Text(
-                      keterangan,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
                       ),
                     ),
 
                     const SizedBox(height: 20),
 
-                    // Info cards
-                    _InfoRow(
-                      icon: Icons.category_outlined,
-                      label: 'Kategori',
-                      value: kategoriName,
-                    ),
-                    const SizedBox(height: 12),
-                    _InfoRow(
-                      icon: Icons.location_on_outlined,
-                      label: 'Lokasi',
-                      value: lokasi,
-                    ),
-                    const SizedBox(height: 12),
-                    _InfoRow(
-                      icon: Icons.calendar_today_outlined,
-                      label: 'Tanggal',
-                      value: tanggal,
-                    ),
+                    // Kategori
+                    _SectionLabel(label: 'Kategori'),
+                    const SizedBox(height: 4),
+                    _SectionValue(value: kategoriName),
+
+                    const SizedBox(height: 16),
+
+                    // Lokasi
+                    _SectionLabel(label: 'Lokasi'),
+                    const SizedBox(height: 4),
+                    _SectionValue(value: lokasi),
+
+                    const SizedBox(height: 16),
+
+                    // Deskripsi
+                    _SectionLabel(label: 'Deskripsi'),
+                    const SizedBox(height: 4),
+                    _SectionValue(value: deskripsi),
+
+                    const SizedBox(height: 16),
+
+                    // Waktu pengiriman
+                    _SectionLabel(label: 'Waktu pengiriman'),
+                    const SizedBox(height: 4),
+                    _SectionValue(value: tanggal),
 
                     // Feedback section
                     if (feedback.isNotEmpty) ...[
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 20),
+                      _SectionLabel(label: 'Feedback'),
+                      const SizedBox(height: 8),
                       Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF155C6B).withOpacity(0.06),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: const Color(0xFF155C6B).withOpacity(0.2),
-                          ),
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: const [
-                                Icon(
-                                  Icons.feedback_outlined,
-                                  size: 16,
-                                  color: Color(0xFF155C6B),
-                                ),
-                                SizedBox(width: 6),
-                                Text(
-                                  'Feedback',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF155C6B),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              feedback,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.black87,
-                                height: 1.5,
-                              ),
-                            ),
-                          ],
+                        child: Text(
+                          feedback,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black87,
+                            height: 1.5,
+                          ),
                         ),
                       ),
                     ],
 
-                    const SizedBox(height: 32),
-
-                    // Tombol tutup
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF155C6B),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                        ),
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          'Tutup',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 28),
                   ],
                 ),
               ),
@@ -259,52 +228,31 @@ class DetailAspirasiModal extends StatelessWidget {
   }
 }
 
-class _InfoRow extends StatelessWidget {
-  final IconData icon;
+class _SectionLabel extends StatelessWidget {
   final String label;
-  final String value;
 
-  const _InfoRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
+  const _SectionLabel({required this.label});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.grey[100],
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, size: 18, color: const Color(0xFF155C6B)),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.black87,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+    return Text(
+      label,
+      style: const TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
+        color: Colors.black87,
+      ),
     );
+  }
+}
+
+class _SectionValue extends StatelessWidget {
+  final String value;
+
+  const _SectionValue({required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(value, style: TextStyle(fontSize: 14, color: Colors.grey[600]));
   }
 }

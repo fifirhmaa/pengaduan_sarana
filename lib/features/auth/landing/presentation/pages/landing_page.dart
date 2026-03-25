@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../../../../aspirasi/presentation/pages/siswa/input_aspirasi_page.dart';
 
 class LandingPage extends StatelessWidget {
