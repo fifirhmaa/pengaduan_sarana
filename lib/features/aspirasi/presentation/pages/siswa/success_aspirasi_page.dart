@@ -73,7 +73,7 @@ class SuccessAspirasiModal extends StatelessWidget {
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
-                Navigator.pop(context); // Tutup dialog
+                Navigator.pop(context);
                 Navigator.pushReplacementNamed(context, '/riwayat-aspirasi');
               },
             ),
@@ -118,7 +118,7 @@ class SuccessAspirasiModal extends StatelessWidget {
                 style: TextStyle(color: Color(0xFF0B5C6B)),
               ),
               onPressed: () {
-                Navigator.pop(context); // Tutup dialog
+                Navigator.pop(context);
                 Navigator.popUntil(context, (route) => route.isFirst);
               },
             ),

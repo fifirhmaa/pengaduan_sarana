@@ -20,7 +20,6 @@ class _AdminAspirasiPageState extends State<AdminAspirasiPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Get screen dimensions for responsive design
     final screenSize = MediaQuery.of(context).size;
     final isTablet = screenSize.width >= 600;
     final isSmallPhone = screenSize.width < 360;
@@ -47,7 +46,6 @@ class _AdminAspirasiPageState extends State<AdminAspirasiPage> {
         child: SafeArea(
           child: Column(
             children: [
-              // Custom App Bar
               Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: horizontalPadding,
@@ -147,7 +145,7 @@ class _AdminAspirasiPageState extends State<AdminAspirasiPage> {
                                 borderRadius: BorderRadius.circular(
                                   isTablet ? 20 : 16,
                                 ),
-                                onTap: null, // Tidak ada aksi saat tap card
+                                onTap: null,
                                 child: Padding(
                                   padding: EdgeInsets.all(isTablet ? 20 : 16),
                                   child: Column(

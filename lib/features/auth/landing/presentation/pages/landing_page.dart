@@ -122,14 +122,12 @@ class LandingPage extends StatelessWidget {
 
                         const Spacer(),
 
-                        // Buttons section with responsive layout
                         Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: horizontalPadding,
                           ),
                           child: Column(
                             children: [
-                              // Kirim Aspirasi Button
                               SizedBox(
                                 width: double.infinity,
                                 height: buttonHeight,

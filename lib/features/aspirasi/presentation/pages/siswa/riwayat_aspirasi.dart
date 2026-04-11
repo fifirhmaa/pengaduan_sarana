@@ -23,18 +23,15 @@ class _RiwayatAspirasiState extends State<RiwayatAspirasi> {
 
   @override
   Widget build(BuildContext context) {
-    // Get screen dimensions for responsive design
     final screenSize = MediaQuery.of(context).size;
     final isTablet = screenSize.width >= 600;
     final isSmallPhone = screenSize.width < 360;
 
-    // Responsive font sizes
     final titleFontSize = isTablet ? 24.0 : 18.0;
     final subtitleFontSize = isTablet ? 16.0 : 14.0;
     final labelFontSize = isTablet ? 16.0 : 14.0;
     final backButtonFontSize = isTablet ? 18.0 : 16.0;
 
-    // Responsive padding
     final horizontalPadding = isTablet ? 32.0 : (isSmallPhone ? 16.0 : 24.0);
     final cardPadding = isTablet ? 24.0 : 20.0;
 

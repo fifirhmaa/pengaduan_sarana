@@ -26,19 +26,15 @@ class _InputAspirasiPageState extends State<InputAspirasiPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Get screen dimensions for responsive design
     final screenSize = MediaQuery.of(context).size;
     final isTablet = screenSize.width >= 600;
     final isSmallPhone = screenSize.width < 360;
 
-    // Responsive container width
     final containerWidth = isTablet ? 500.0 : (isSmallPhone ? 320.0 : 350.0);
 
-    // Responsive padding
     final verticalPadding = isTablet ? 48.0 : 32.0;
     final horizontalPadding = isTablet ? 32.0 : 24.0;
 
-    // Responsive font sizes
     final titleFontSize = isTablet ? 28.0 : 20.0;
     final subtitleFontSize = isTablet ? 16.0 : 14.0;
     final labelFontSize = isTablet ? 16.0 : 14.0;
