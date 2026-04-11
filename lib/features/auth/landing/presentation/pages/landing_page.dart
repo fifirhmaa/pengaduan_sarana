@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../../../../aspirasi/presentation/pages/siswa/input_aspirasi_page.dart';
 
 class LandingPage extends StatelessWidget {
@@ -7,35 +8,27 @@ class LandingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get screen dimensions
     final screenSize = MediaQuery.of(context).size;
     final screenHeight = screenSize.height;
     final screenWidth = screenSize.width;
 
-    // Responsive sizing
     final isTablet = screenWidth >= 600;
     final isSmallPhone = screenWidth < 360;
 
-    // Responsive image height
     final imageHeight = screenHeight * (isTablet ? 0.28 : 0.22);
 
-    // Responsive font sizes
     final titleFontSize = isTablet ? 32.0 : (isSmallPhone ? 20.0 : 24.0);
     final subtitleFontSize = isTablet ? 18.0 : (isSmallPhone ? 13.0 : 15.0);
     final buttonFontSize = isTablet ? 18.0 : (isSmallPhone ? 14.0 : 16.0);
 
-    // Responsive spacing
     final topSpacing = screenHeight * (isTablet ? 0.1 : 0.08);
     final buttonSpacing = screenHeight * (isSmallPhone ? 0.012 : 0.016);
     final bottomSpacing = screenHeight * 0.08;
 
-    // Responsive button height
     final buttonHeight = isTablet ? 64.0 : (isSmallPhone ? 48.0 : 56.0);
 
-    // Responsive padding
     final horizontalPadding = isTablet ? 48.0 : (isSmallPhone ? 24.0 : 32.0);
 
-    // Check orientation
     final isLandscape = screenWidth > screenHeight;
 
     return Scaffold(
@@ -67,8 +60,6 @@ class LandingPage extends StatelessWidget {
                         SizedBox(
                           height: isLandscape ? topSpacing * 0.5 : topSpacing,
                         ),
-
-                        // Illustration with responsive sizing
                         Hero(
                           tag: 'landing_illustration',
                           child: Image.asset(
@@ -77,12 +68,9 @@ class LandingPage extends StatelessWidget {
                             fit: BoxFit.contain,
                           ),
                         ),
-
                         SizedBox(
                           height: screenHeight * (isTablet ? 0.05 : 0.04),
                         ),
-
-                        // Title with responsive layout
                         Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: horizontalPadding * 0.8,
@@ -99,10 +87,7 @@ class LandingPage extends StatelessWidget {
                             ),
                           ),
                         ),
-
                         SizedBox(height: screenHeight * 0.02),
-
-                        // Subtitle
                         Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: horizontalPadding,
@@ -119,9 +104,7 @@ class LandingPage extends StatelessWidget {
                             ),
                           ),
                         ),
-
                         const Spacer(),
-
                         Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: horizontalPadding,
@@ -174,10 +157,7 @@ class LandingPage extends StatelessWidget {
                                   ),
                                 ),
                               ),
-
                               SizedBox(height: buttonSpacing),
-
-                              // Riwayat Button
                               SizedBox(
                                 width: double.infinity,
                                 height: buttonHeight,
@@ -223,10 +203,7 @@ class LandingPage extends StatelessWidget {
                                   ),
                                 ),
                               ),
-
                               SizedBox(height: buttonSpacing),
-
-                              // Admin Button
                               SizedBox(
                                 width: double.infinity,
                                 height: buttonHeight,
@@ -275,7 +252,6 @@ class LandingPage extends StatelessWidget {
                             ],
                           ),
                         ),
-
                         SizedBox(height: bottomSpacing),
                       ],
                     ),

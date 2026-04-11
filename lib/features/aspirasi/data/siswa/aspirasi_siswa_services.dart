@@ -6,7 +6,6 @@ import 'package:pocketbase/pocketbase.dart';
 import '../../../../core/pocketbase_client.dart';
 
 class AspirasiSiswaService {
-  // ================= KATEGORI DEFAULT =================
   Future<void> buatKategoriDefault() async {
     try {
       final existing = await getKategori();
@@ -47,7 +46,6 @@ class AspirasiSiswaService {
     }
   }
 
-  // ================= CREATE ASPIRASI =================
   Future<RecordModel> createAspirasi({
     required String nis,
     required String lokasi,
@@ -57,21 +55,17 @@ class AspirasiSiswaService {
     String? fileName,
   }) async {
     try {
-      // Validasi input
       if (nis.isEmpty) throw Exception('NIS tidak boleh kosong');
       if (lokasi.isEmpty) throw Exception('Lokasi tidak boleh kosong');
       if (keterangan.isEmpty) throw Exception('Keterangan tidak boleh kosong');
       if (kategoriId.isEmpty) throw Exception('Kategori tidak boleh kosong');
 
-      // Cek siswa
       final siswa = await getSiswaByNis(nis);
       if (siswa == null)
         throw Exception('Siswa dengan NIS $nis tidak ditemukan');
 
-      // Cek kategori
       await getKategoriById(kategoriId);
 
-      // Siapkan body
       final body = {
         'nis': int.tryParse(nis) ?? 0,
         'lokasi': lokasi,
@@ -82,33 +76,26 @@ class AspirasiSiswaService {
         'siswa': siswa.id,
       };
 
-      // Validasi dan tambahkan foto jika ada
       if (fotoBytes != null && fileName != null && fotoBytes.isNotEmpty) {
-        // Validasi ukuran file (max 5MB)
         if (!isValidFileSize(fotoBytes, maxSizeMB: 5)) {
           throw Exception('Ukuran file maksimal 5MB');
         }
 
-        // Validasi tipe file
         if (!isValidImageType(fileName)) {
           throw Exception('Format file harus JPG, JPEG, PNG, atau WEBP');
         }
 
-        // Cara yang benar untuk upload file di PocketBase
         final file = http.MultipartFile.fromBytes(
           'foto',
           fotoBytes,
           filename: fileName,
         );
-
-        // Kirim dengan multipart request
         final result = await pb
             .collection('aspirasi')
             .create(body: body, files: [file]);
         return result;
       }
 
-      // Kirim tanpa file
       final record = await pb.collection('aspirasi').create(body: body);
       return record;
     } catch (e) {
@@ -116,7 +103,6 @@ class AspirasiSiswaService {
     }
   }
 
-  // ================= CREATE ASPIRASI WITH MULTIPLE FOTOS =================
   Future<RecordModel> createAspirasiWithMultipleFotos({
     required String nis,
     required String lokasi,
@@ -125,21 +111,17 @@ class AspirasiSiswaService {
     required List<({Uint8List bytes, String name})> fotos,
   }) async {
     try {
-      // Validasi input
       if (nis.isEmpty) throw Exception('NIS tidak boleh kosong');
       if (lokasi.isEmpty) throw Exception('Lokasi tidak boleh kosong');
       if (keterangan.isEmpty) throw Exception('Keterangan tidak boleh kosong');
       if (kategoriId.isEmpty) throw Exception('Kategori tidak boleh kosong');
 
-      // Cek siswa
       final siswa = await getSiswaByNis(nis);
       if (siswa == null)
         throw Exception('Siswa dengan NIS $nis tidak ditemukan');
 
-      // Cek kategori
       await getKategoriById(kategoriId);
 
-      // Siapkan body
       final body = {
         'nis': int.tryParse(nis) ?? 0,
         'lokasi': lokasi,
@@ -150,9 +132,7 @@ class AspirasiSiswaService {
         'siswa': siswa.id,
       };
 
-      // Validasi dan tambahkan multiple foto
       if (fotos.isNotEmpty) {
-        // Batasi maksimal 5 foto
         if (fotos.length > 5) {
           throw Exception('Maksimal upload 5 foto');
         }
@@ -160,12 +140,10 @@ class AspirasiSiswaService {
         final files = <http.MultipartFile>[];
         for (var i = 0; i < fotos.length; i++) {
           final foto = fotos[i];
-          // Validasi ukuran file (max 5MB per file)
           if (!isValidFileSize(foto.bytes, maxSizeMB: 5)) {
             throw Exception('Ukuran file ${foto.name} melebihi 5MB');
           }
 
-          // Validasi tipe file
           if (!isValidImageType(foto.name)) {
             throw Exception('Format file ${foto.name} tidak didukung');
           }
@@ -179,14 +157,12 @@ class AspirasiSiswaService {
           );
         }
 
-        // Kirim dengan multipart request
         final result = await pb
             .collection('aspirasi')
             .create(body: body, files: files);
         return result;
       }
 
-      // Kirim tanpa file
       final record = await pb.collection('aspirasi').create(body: body);
       return record;
     } catch (e) {
@@ -194,7 +170,6 @@ class AspirasiSiswaService {
     }
   }
 
-  // ================= DELETE ASPIRASI =================
   Future<void> deleteAspirasi(String aspirasiId) async {
     try {
       if (aspirasiId.isEmpty) throw Exception('ID aspirasi tidak boleh kosong');
@@ -204,10 +179,8 @@ class AspirasiSiswaService {
     }
   }
 
-  // ================= DELETE FOTO =================
   Future<void> deleteFoto(String aspirasiId, {int? index}) async {
     try {
-      // Ambil record dulu
       final aspirasi = await pb.collection('aspirasi').getOne(aspirasiId);
       final currentFoto = aspirasi.data['foto'];
 
@@ -215,9 +188,7 @@ class AspirasiSiswaService {
         throw Exception('Tidak ada foto untuk dihapus');
       }
 
-      // Handle multiple files
       if (currentFoto is List && index != null) {
-        // Hapus foto specific index
         final updatedFotos = List.from(currentFoto);
         if (index < updatedFotos.length) {
           updatedFotos.removeAt(index);
@@ -231,7 +202,6 @@ class AspirasiSiswaService {
           throw Exception('Index foto tidak valid');
         }
       } else {
-        // Hapus semua foto
         await pb
             .collection('aspirasi')
             .update(aspirasiId, body: {'foto': null});
@@ -241,7 +211,6 @@ class AspirasiSiswaService {
     }
   }
 
-  // ================= HELPER FORMAT =================
   String formatFileSize(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
@@ -271,7 +240,6 @@ class AspirasiSiswaService {
     }
   }
 
-  // ================= GET ASPIRASI =================
   Future<List<RecordModel>> getAspirasi({String? nis, String? siswaId}) async {
     try {
       String? filter;
@@ -291,7 +259,6 @@ class AspirasiSiswaService {
     }
   }
 
-  // ================= GET ASPIRASI BY ID =================
   Future<RecordModel?> getAspirasiById(String id) async {
     try {
       return await pb.collection('aspirasi').getOne(id, expand: 'kategori');
@@ -300,13 +267,11 @@ class AspirasiSiswaService {
     }
   }
 
-  // ================= GET FOTO =================
   String? getFotoUrl(RecordModel aspirasi, {int index = 0}) {
     try {
       final fotoData = aspirasi.data['foto'];
       if (fotoData == null) return null;
 
-      // Handle multiple files
       List<String> fotoFiles = [];
       if (fotoData is List) {
         fotoFiles = List<String>.from(fotoData);
@@ -325,7 +290,6 @@ class AspirasiSiswaService {
     }
   }
 
-  // ================= GET KATEGORI =================
   Future<List<RecordModel>> getKategori() async {
     try {
       return await pb.collection('kategori').getFullList();
@@ -342,7 +306,6 @@ class AspirasiSiswaService {
     }
   }
 
-  // ================= GET SISWA =================
   Future<RecordModel?> getSiswaById(String id) async {
     try {
       return await pb.collection('siswa').getOne(id);
@@ -359,7 +322,6 @@ class AspirasiSiswaService {
     }
   }
 
-  // ================= STATISTIK =================
   Future<Map<String, int>> getStatistik(String nis) async {
     try {
       final siswa = await getSiswaByNis(nis);
@@ -393,7 +355,6 @@ class AspirasiSiswaService {
     }
   }
 
-  // ================= HELPER VALIDASI =================
   bool isValidFileSize(Uint8List bytes, {int maxSizeMB = 5}) {
     final maxSizeBytes = maxSizeMB * 1024 * 1024;
     return bytes.lengthInBytes <= maxSizeBytes;
@@ -404,7 +365,6 @@ class AspirasiSiswaService {
     return ['jpg', 'jpeg', 'png', 'webp'].contains(extension);
   }
 
-  // ================= RESET (UNTUK TESTING) =================
   Future<void> resetUntukTesting() async {
     try {
       final semua = await pb.collection('aspirasi').getFullList();
@@ -416,7 +376,6 @@ class AspirasiSiswaService {
     }
   }
 
-  // ================= SUBSCRIBE =================
   Future<void> subscribeAspirasi({
     required String nis,
     required Function(RecordModel) onUpdate,
@@ -446,7 +405,6 @@ class AspirasiSiswaService {
     }
   }
 
-  // ================= UPDATE FOTO =================
   Future<void> updateFoto({
     required String aspirasiId,
     required Uint8List fotoBytes,
@@ -454,12 +412,10 @@ class AspirasiSiswaService {
     bool replace = true,
   }) async {
     try {
-      // Validasi ukuran file
       if (!isValidFileSize(fotoBytes, maxSizeMB: 5)) {
         throw Exception('Ukuran file maksimal 5MB');
       }
 
-      // Validasi tipe file
       if (!isValidImageType(fileName)) {
         throw Exception('Format file harus JPG, JPEG, PNG, atau WEBP');
       }
@@ -471,24 +427,10 @@ class AspirasiSiswaService {
       );
 
       if (replace) {
-        // Replace foto yang ada
         await pb
             .collection('aspirasi')
             .update(aspirasiId, body: {}, files: [file]);
       } else {
-        // Tambahkan ke collection foto yang sudah ada (multiple files)
-        final aspirasi = await pb.collection('aspirasi').getOne(aspirasiId);
-        final currentFoto = aspirasi.data['foto'];
-
-        List currentFiles = [];
-        if (currentFoto is List) {
-          currentFiles = List.from(currentFoto);
-        } else if (currentFoto is String && currentFoto.isNotEmpty) {
-          currentFiles = [currentFoto];
-        }
-
-        // Kita perlu mengirim ulang semua file yang ada + file baru
-        // Ini lebih kompleks, untuk saran lebih baik gunakan replace
         throw Exception(
           'Untuk multiple files, gunakan createAspirasiWithMultipleFotos',
         );
@@ -498,7 +440,6 @@ class AspirasiSiswaService {
     }
   }
 
-  // ================= UPDATE STATUS =================
   Future<void> updateStatus({
     required String aspirasiId,
     required String status,

@@ -27,7 +27,6 @@ class _InputAspirasiPageState extends State<InputAspirasiPage> {
   String? selectedKategori;
   bool isLoading = false;
 
-  // File upload variables
   Uint8List? fotoBytes;
   String? fileName;
 
@@ -38,14 +37,12 @@ class _InputAspirasiPageState extends State<InputAspirasiPage> {
     final isDesktop = screenSize.width >= 1200;
     final isSmallPhone = screenSize.width < 360;
 
-    // Responsive font sizes
     final titleFontSize = isDesktop ? 32.0 : (isTablet ? 28.0 : 20.0);
     final subtitleFontSize = isDesktop ? 18.0 : (isTablet ? 16.0 : 14.0);
     final labelFontSize = isDesktop ? 16.0 : (isTablet ? 15.0 : 14.0);
     final inputFontSize = isDesktop ? 15.0 : (isTablet ? 14.0 : 13.0);
     final hintFontSize = isDesktop ? 14.0 : (isTablet ? 13.0 : 12.0);
 
-    // Padding luar sama persis seperti admin page
     final outerHorizontalPadding = isDesktop
         ? 32.0
         : (isTablet ? 16.0 : (isSmallPhone ? 6.0 : 8.0));
@@ -73,7 +70,6 @@ class _InputAspirasiPageState extends State<InputAspirasiPage> {
               horizontal: outerHorizontalPadding,
             ),
             child: Container(
-              // Sama seperti card admin: width double.infinity, isi penuh layar minus padding luar
               width: double.infinity,
               padding: EdgeInsets.all(isTablet ? 20 : 16),
               decoration: BoxDecoration(
@@ -244,7 +240,6 @@ class _InputAspirasiPageState extends State<InputAspirasiPage> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Upload Foto Section
                     Text(
                       'Foto Pendukung (Opsional)',
                       style: GoogleFonts.poppins(

@@ -24,7 +24,6 @@ class _AdminAspirasiPageState extends State<AdminAspirasiPage> {
     final isTablet = screenSize.width >= 600;
     final isSmallPhone = screenSize.width < 360;
 
-    // Responsive padding
     final horizontalPadding = isTablet ? 24.0 : (isSmallPhone ? 12.0 : 16.0);
 
     return Scaffold(
@@ -346,7 +345,6 @@ class _AdminAspirasiPageState extends State<AdminAspirasiPage> {
     }
   }
 
-  // ================= LOGOUT =================
   void logout() {
     showDialog(
       context: context,
@@ -525,7 +523,6 @@ class _AdminAspirasiPageState extends State<AdminAspirasiPage> {
     );
   }
 
-  // ================= TAMBAH USER =================
   void openAddUser() {
     final formKey = GlobalKey<FormState>();
     final nisCtrl = TextEditingController();
@@ -672,7 +669,6 @@ class _AdminAspirasiPageState extends State<AdminAspirasiPage> {
     );
   }
 
-  // ================= EDIT =================
   void openEdit(RecordModel a) {
     final feedbackCtrl = TextEditingController(text: a.data['feedback'] ?? '');
     String status = a.data['status'] ?? 'Menunggu';

@@ -24,7 +24,6 @@ class DetailAspirasiModal extends StatelessWidget {
     final kelas = aspirasi.data['kelas']?.toString() ?? '-';
     final tanggal = _formatDate(aspirasi.created);
 
-    // Kategori dari expand
     String kategoriName = '-';
     final kategoriExpand = aspirasi.expand['kategori'] as List?;
     if (kategoriExpand != null && kategoriExpand.isNotEmpty) {
@@ -42,7 +41,6 @@ class DetailAspirasiModal extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Header
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 20, 12, 0),
               child: Row(
@@ -90,7 +88,6 @@ class DetailAspirasiModal extends StatelessWidget {
             const SizedBox(height: 16),
             const Divider(height: 1, thickness: 1),
 
-            // Scrollable content
             Flexible(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(
@@ -100,7 +97,6 @@ class DetailAspirasiModal extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Status section
                     _SectionLabel(label: 'Status'),
                     const SizedBox(height: 8),
                     Align(

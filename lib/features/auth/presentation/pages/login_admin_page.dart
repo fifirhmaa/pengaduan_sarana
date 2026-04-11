@@ -55,7 +55,6 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Title
                   const Center(
                     child: Text(
                       'Login Admin',
@@ -76,7 +75,6 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
 
                   const SizedBox(height: 24),
 
-                  // Email field
                   const Text(
                     'Email',
                     style: TextStyle(
@@ -122,7 +120,6 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
 
                   const SizedBox(height: 16),
 
-                  // Password field
                   const Text(
                     'Password',
                     style: TextStyle(
@@ -168,10 +165,8 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
 
                   const SizedBox(height: 28),
 
-                  // Buttons row
                   Row(
                     children: [
-                      // Back button
                       Container(
                         width: 56,
                         height: 56,
@@ -191,7 +186,6 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
 
                       const SizedBox(width: 12),
 
-                      // Login button
                       Expanded(
                         child: SizedBox(
                           height: 56,
