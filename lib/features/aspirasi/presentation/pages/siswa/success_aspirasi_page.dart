@@ -15,20 +15,40 @@ class SuccessAspirasiModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final isTablet = screenSize.width >= 600;
+    final isDesktop = screenSize.width >= 1200;
+    final isSmallPhone = screenSize.width < 360;
+
+    final outerHorizontalPadding = isDesktop
+        ? 32.0
+        : (isTablet ? 16.0 : (isSmallPhone ? 6.0 : 8.0));
+
     return Dialog(
       backgroundColor: Colors.transparent,
       elevation: 0,
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: outerHorizontalPadding,
+        vertical: 24,
+      ),
       child: Container(
-        width: 350,
-        padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(
+          vertical: isTablet ? 40 : 32,
+          horizontal: isTablet ? 32 : 24,
+        ),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(isTablet ? 20 : 16),
+          border: Border.all(
+            color: const Color(0xFF0F5C66).withOpacity(0.15),
+            width: 1.2,
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 24,
-              offset: const Offset(0, 8),
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -36,23 +56,26 @@ class SuccessAspirasiModal extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(
-              height: 120,
+              height: isTablet ? 150 : 120,
               child: Image.asset('lib/assets/success.png', fit: BoxFit.contain),
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'Aspirasi berhasil dikirim!',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: isTablet ? 24 : 20,
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Terimakasih atas aspirasi anda. Kami akan segera menindak lanjutinya.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: Colors.grey),
+              style: TextStyle(
+                fontSize: isTablet ? 15 : 14,
+                color: Colors.grey,
+              ),
             ),
             const SizedBox(height: 32),
             ElevatedButton.icon(
@@ -61,8 +84,8 @@ class SuccessAspirasiModal extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                padding: const EdgeInsets.symmetric(
-                  vertical: 16,
+                padding: EdgeInsets.symmetric(
+                  vertical: isTablet ? 18 : 16,
                   horizontal: 8,
                 ),
                 minimumSize: const Size(double.infinity, 50),
@@ -84,8 +107,8 @@ class SuccessAspirasiModal extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                padding: const EdgeInsets.symmetric(
-                  vertical: 16,
+                padding: EdgeInsets.symmetric(
+                  vertical: isTablet ? 18 : 16,
                   horizontal: 8,
                 ),
                 minimumSize: const Size(double.infinity, 50),
@@ -106,8 +129,8 @@ class SuccessAspirasiModal extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                padding: const EdgeInsets.symmetric(
-                  vertical: 16,
+                padding: EdgeInsets.symmetric(
+                  vertical: isTablet ? 18 : 16,
                   horizontal: 8,
                 ),
                 minimumSize: const Size(double.infinity, 50),
