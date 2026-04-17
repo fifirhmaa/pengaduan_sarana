@@ -5,6 +5,7 @@ import 'package:pocketbase/pocketbase.dart';
 import '../../../../../core/pocketbase_client.dart';
 import '../../../../auth/landing/presentation/pages/landing_page.dart';
 import '../../../data/admin/aspirasi_admin_services.dart';
+import 'detail_aspirasi_admin.dart';
 
 class AdminAspirasiPage extends StatefulWidget {
   const AdminAspirasiPage({super.key});
@@ -144,7 +145,11 @@ class _AdminAspirasiPageState extends State<AdminAspirasiPage> {
                                 borderRadius: BorderRadius.circular(
                                   isTablet ? 20 : 16,
                                 ),
-                                onTap: null,
+                                onTap: () => showDetailAspirasiAdmin(
+                                  context,
+                                  a,
+                                  onUpdated: () => load(),
+                                ),
                                 child: Padding(
                                   padding: EdgeInsets.all(isTablet ? 20 : 16),
                                   child: Column(
@@ -190,7 +195,12 @@ class _AdminAspirasiPageState extends State<AdminAspirasiPage> {
                                                 size: 20,
                                                 color: Color(0xFF0F5C66),
                                               ),
-                                              onPressed: () => openEdit(a),
+                                              onPressed: () =>
+                                                  showDetailAspirasiAdmin(
+                                                    context,
+                                                    a,
+                                                    onUpdated: () => load(),
+                                                  ),
                                               constraints: const BoxConstraints(
                                                 minWidth: 36,
                                                 minHeight: 36,
@@ -666,95 +676,6 @@ class _AdminAspirasiPageState extends State<AdminAspirasiPage> {
           },
         );
       },
-    );
-  }
-
-  void openEdit(RecordModel a) {
-    final feedbackCtrl = TextEditingController(text: a.data['feedback'] ?? '');
-    String status = a.data['status'] ?? 'Menunggu';
-
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Update Aspirasi',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            DropdownButtonFormField<String>(
-              value: status,
-              decoration: InputDecoration(
-                labelText: 'Status',
-                labelStyle: GoogleFonts.poppins(),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              items: const [
-                DropdownMenuItem(value: 'Menunggu', child: Text('Menunggu')),
-                DropdownMenuItem(value: 'Proses', child: Text('Proses')),
-                DropdownMenuItem(value: 'Selesai', child: Text('Selesai')),
-              ],
-              onChanged: (v) => status = v!,
-              style: GoogleFonts.poppins(),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: feedbackCtrl,
-              decoration: InputDecoration(
-                labelText: 'Feedback',
-                labelStyle: GoogleFonts.poppins(),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              style: GoogleFonts.poppins(),
-              maxLines: 3,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Batal', style: GoogleFonts.poppins()),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0F5C66),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            onPressed: () async {
-              await service.updateStatus(
-                aspirasiId: a.id,
-                status: status,
-                feedback: feedbackCtrl.text,
-              );
-
-              Navigator.pop(context);
-              load();
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Aspirasi berhasil diperbarui',
-                    style: GoogleFonts.poppins(),
-                  ),
-                  backgroundColor: Colors.green,
-                ),
-              );
-            },
-            child: Text(
-              'Simpan',
-              style: GoogleFonts.poppins(color: Colors.white),
-            ),
-          ),
-        ],
-      ),
     );
   }
 

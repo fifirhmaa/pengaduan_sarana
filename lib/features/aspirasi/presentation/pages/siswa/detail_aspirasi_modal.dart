@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
+import '../../../../../core/pocketbase_client.dart';
+
 void showDetailAspirasiModal(BuildContext context, RecordModel aspirasi) {
   showDialog(
     context: context,
@@ -20,14 +22,27 @@ class DetailAspirasiModal extends StatelessWidget {
     final lokasi = aspirasi.data['lokasi'] ?? '-';
     final deskripsi = aspirasi.data['keterangan'] ?? '-';
     final feedback = aspirasi.data['feedback']?.toString() ?? '';
-    final nisn = aspirasi.data['nisn']?.toString() ?? '-';
-    final kelas = aspirasi.data['kelas']?.toString() ?? '-';
     final tanggal = _formatDate(aspirasi.created);
 
     String kategoriName = '-';
     final kategoriExpand = aspirasi.expand['kategori'] as List?;
     if (kategoriExpand != null && kategoriExpand.isNotEmpty) {
       kategoriName = kategoriExpand.first.data['kategori'] ?? '-';
+    }
+
+    final fotoData = aspirasi.data['foto'];
+    List<String> fotoFilenames = [];
+
+    if (fotoData != null) {
+      if (fotoData is List) {
+        for (var foto in fotoData) {
+          if (foto is String && foto.isNotEmpty) {
+            fotoFilenames.add(foto);
+          }
+        }
+      } else if (fotoData is String && fotoData.isNotEmpty) {
+        fotoFilenames = [fotoData];
+      }
     }
 
     return Dialog(
@@ -123,33 +138,101 @@ class DetailAspirasiModal extends StatelessWidget {
 
                     const SizedBox(height: 20),
 
-                    // Kategori
                     _SectionLabel(label: 'Kategori'),
                     const SizedBox(height: 4),
                     _SectionValue(value: kategoriName),
 
                     const SizedBox(height: 16),
 
-                    // Lokasi
                     _SectionLabel(label: 'Lokasi'),
                     const SizedBox(height: 4),
                     _SectionValue(value: lokasi),
 
                     const SizedBox(height: 16),
 
-                    // Deskripsi
                     _SectionLabel(label: 'Deskripsi'),
                     const SizedBox(height: 4),
                     _SectionValue(value: deskripsi),
 
                     const SizedBox(height: 16),
 
-                    // Waktu pengiriman
+                    if (fotoFilenames.isNotEmpty) ...[
+                      _SectionLabel(label: 'Foto'),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        height: 200,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: fotoFilenames.length,
+                          itemBuilder: (context, index) {
+                            final fotoUrl = _getFotoUrl(fotoFilenames[index]);
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 12),
+                              child: GestureDetector(
+                                onTap: () {
+                                  _showFullImage(context, fotoUrl);
+                                },
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.network(
+                                    fotoUrl,
+                                    width: 200,
+                                    height: 200,
+                                    fit: BoxFit.cover,
+                                    loadingBuilder:
+                                        (context, child, loadingProgress) {
+                                          if (loadingProgress == null)
+                                            return child;
+                                          return Container(
+                                            width: 200,
+                                            height: 200,
+                                            color: Colors.grey[200],
+                                            child: const Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            ),
+                                          );
+                                        },
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        width: 200,
+                                        height: 200,
+                                        color: Colors.grey[200],
+                                        child: const Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.broken_image,
+                                              size: 48,
+                                              color: Colors.grey,
+                                            ),
+                                            SizedBox(height: 8),
+                                            Text(
+                                              'Gagal memuat gambar',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+
                     _SectionLabel(label: 'Waktu pengiriman'),
                     const SizedBox(height: 4),
                     _SectionValue(value: tanggal),
 
-                    // Feedback section
                     if (feedback.isNotEmpty) ...[
                       const SizedBox(height: 20),
                       _SectionLabel(label: 'Feedback'),
@@ -210,6 +293,10 @@ class DetailAspirasiModal extends StatelessWidget {
     }
   }
 
+  String _getFotoUrl(String filename) {
+    return pb.files.getUrl(aspirasi, filename).toString();
+  }
+
   Color _getStatusColor(String status) {
     switch (status) {
       case 'Selesai':
@@ -221,6 +308,64 @@ class DetailAspirasiModal extends StatelessWidget {
       default:
         return Colors.grey;
     }
+  }
+
+  void _showFullImage(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.zero,
+        child: Stack(
+          children: [
+            Center(
+              child: InteractiveViewer(
+                minScale: 0.5,
+                maxScale: 4.0,
+                child: Image.network(
+                  imageUrl,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return const Center(
+                      child: CircularProgressIndicator(color: Colors.white),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      padding: const EdgeInsets.all(20),
+                      color: Colors.black87,
+                      child: const Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.error, size: 48, color: Colors.white),
+                          SizedBox(height: 16),
+                          Text(
+                            'Gagal memuat gambar',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            Positioned(
+              top: 40,
+              right: 20,
+              child: IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                style: IconButton.styleFrom(
+                  backgroundColor: Colors.black54,
+                  shape: const CircleBorder(),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
