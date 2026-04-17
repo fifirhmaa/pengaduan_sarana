@@ -14,10 +14,69 @@ class AdminAspirasiPage extends StatefulWidget {
   State<AdminAspirasiPage> createState() => _AdminAspirasiPageState();
 }
 
-class _AdminAspirasiPageState extends State<AdminAspirasiPage> {
+class _AdminAspirasiPageState extends State<AdminAspirasiPage>
+    with SingleTickerProviderStateMixin {
   final service = AspirasiAdminService();
   List<RecordModel> list = [];
+  List<RecordModel> filteredList = [];
   bool loading = true;
+
+  // Filter variables
+  String selectedStatus = 'Semua';
+  String selectedKategori = 'Semua';
+  String sortBy = 'Terbaru';
+  String searchQuery = '';
+
+  List<String> kategoriList = [];
+
+  void applyFilters() {
+    List<RecordModel> result = List.from(list);
+
+    // Filter by status
+    if (selectedStatus != 'Semua') {
+      result = result.where((a) => a.data['status'] == selectedStatus).toList();
+    }
+
+    // Filter by kategori
+    if (selectedKategori != 'Semua') {
+      result = result.where((a) {
+        final kategori = a.expand['kategori']?.isNotEmpty == true
+            ? a.expand['kategori']!.first.data['kategori']
+            : '-';
+        return kategori == selectedKategori;
+      }).toList();
+    }
+
+    // Filter by search query
+    if (searchQuery.isNotEmpty) {
+      result = result.where((a) {
+        final nis = a.data['nis']?.toString().toLowerCase() ?? '';
+        final lokasi = a.data['lokasi']?.toString().toLowerCase() ?? '';
+        final keterangan = a.data['keterangan']?.toString().toLowerCase() ?? '';
+        final query = searchQuery.toLowerCase();
+        return nis.contains(query) ||
+            lokasi.contains(query) ||
+            keterangan.contains(query);
+      }).toList();
+    }
+
+    // Sort
+    if (sortBy == 'Terbaru') {
+      result.sort((a, b) => b.created.compareTo(a.created));
+    } else if (sortBy == 'Terlama') {
+      result.sort((a, b) => a.created.compareTo(b.created));
+    } else if (sortBy == 'NIS') {
+      result.sort((a, b) {
+        final nisA = a.data['nis']?.toString() ?? '';
+        final nisB = b.data['nis']?.toString() ?? '';
+        return nisA.compareTo(nisB);
+      });
+    }
+
+    setState(() {
+      filteredList = result;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,45 +105,15 @@ class _AdminAspirasiPageState extends State<AdminAspirasiPage> {
         child: SafeArea(
           child: Column(
             children: [
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: horizontalPadding,
-                  vertical: isTablet ? 20 : 16,
-                ),
-                child: Row(
-                  children: [
-                    const Expanded(
-                      child: Text(
-                        'Admin - Aspirasi',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.person_add, color: Colors.white),
-                      onPressed: openAddUser,
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.category, color: Colors.white),
-                      onPressed: openAddKategori,
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.logout, color: Colors.white),
-                      onPressed: logout,
-                    ),
-                  ],
-                ),
-              ),
-              const Divider(color: Colors.white54, height: 0),
+              _buildHeader(horizontalPadding, isTablet),
+              _buildFilterNavbar(horizontalPadding),
+
               Expanded(
                 child: loading
                     ? const Center(
                         child: CircularProgressIndicator(color: Colors.white),
                       )
-                    : list.isEmpty
+                    : filteredList.isEmpty
                     ? const Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -92,7 +121,7 @@ class _AdminAspirasiPageState extends State<AdminAspirasiPage> {
                             Icon(Icons.inbox, size: 64, color: Colors.white70),
                             SizedBox(height: 12),
                             Text(
-                              'Belum ada aspirasi',
+                              'Tidak ada aspirasi',
                               style: TextStyle(
                                 color: Colors.white70,
                                 fontSize: 16,
@@ -102,13 +131,14 @@ class _AdminAspirasiPageState extends State<AdminAspirasiPage> {
                         ),
                       )
                     : ListView.builder(
+                        physics: const BouncingScrollPhysics(),
                         padding: EdgeInsets.symmetric(
                           horizontal: horizontalPadding,
                           vertical: 16,
                         ),
-                        itemCount: list.length,
+                        itemCount: filteredList.length,
                         itemBuilder: (context, i) {
-                          final a = list[i];
+                          final a = filteredList[i];
                           final kategori =
                               a.expand['kategori']?.isNotEmpty == true
                               ? a.expand['kategori']!.first.data['kategori']
@@ -223,66 +253,81 @@ class _AdminAspirasiPageState extends State<AdminAspirasiPage> {
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                       const SizedBox(height: 12),
-                                      Row(
+                                      Wrap(
+                                        spacing: 16,
+                                        runSpacing: 8,
                                         children: [
-                                          const Icon(
-                                            Icons.person,
-                                            size: 16,
-                                            color: Colors.grey,
+                                          Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Icon(
+                                                Icons.person,
+                                                size: 16,
+                                                color: Colors.grey,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                'NIS: $nis',
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: 13,
+                                                  color: Colors.black54,
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            'NIS: $nis',
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 13,
-                                              color: Colors.black54,
-                                            ),
+                                          Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Icon(
+                                                Icons.category,
+                                                size: 16,
+                                                color: Colors.grey,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                kategori,
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: 13,
+                                                  color: Colors.black54,
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          const SizedBox(width: 16),
-                                          const Icon(
-                                            Icons.category,
-                                            size: 16,
-                                            color: Colors.grey,
+                                          Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Icon(
+                                                Icons.location_on,
+                                                size: 16,
+                                                color: Colors.grey,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                lokasi,
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: 13,
+                                                  color: Colors.black54,
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            kategori,
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 13,
-                                              color: Colors.black54,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.location_on,
-                                            size: 16,
-                                            color: Colors.grey,
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            lokasi,
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 13,
-                                              color: Colors.black54,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 16),
-                                          const Icon(
-                                            Icons.calendar_today,
-                                            size: 16,
-                                            color: Colors.grey,
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            tanggal,
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 13,
-                                              color: Colors.black54,
-                                            ),
+                                          Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Icon(
+                                                Icons.calendar_today,
+                                                size: 16,
+                                                color: Colors.grey,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                tanggal,
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: 13,
+                                                  color: Colors.black54,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
@@ -326,6 +371,21 @@ class _AdminAspirasiPageState extends State<AdminAspirasiPage> {
     );
   }
 
+  void extractKategoriList() {
+    final Set<String> uniqueKategori = {};
+    for (var a in list) {
+      final kategori = a.expand['kategori']?.isNotEmpty == true
+          ? a.expand['kategori']!.first.data['kategori']
+          : null;
+      if (kategori != null && kategori != '-') {
+        uniqueKategori.add(kategori);
+      }
+    }
+    setState(() {
+      kategoriList = uniqueKategori.toList();
+    });
+  }
+
   Color getStatusColor(String status) {
     switch (status) {
       case 'Selesai':
@@ -352,6 +412,8 @@ class _AdminAspirasiPageState extends State<AdminAspirasiPage> {
         list = data;
         loading = false;
       });
+      extractKategoriList();
+      applyFilters();
     }
   }
 
@@ -676,6 +738,244 @@ class _AdminAspirasiPageState extends State<AdminAspirasiPage> {
           },
         );
       },
+    );
+  }
+
+  Widget _buildFilterNavbar(double horizontalPadding) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: horizontalPadding,
+        vertical: 12,
+      ),
+      color: const Color(0xFF4A8B96),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: TextButton(
+              onPressed: () {
+                setState(() {
+                  selectedStatus = 'Semua';
+                  selectedKategori = 'Semua';
+                  sortBy = 'Terbaru';
+                  searchQuery = '';
+                  applyFilters();
+                });
+              },
+              child: Text(
+                'Semua',
+                style: GoogleFonts.poppins(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          // Status Dropdown
+          Expanded(
+            child: PopupMenuButton<String>(
+              onSelected: (value) {
+                setState(() {
+                  selectedStatus = value;
+                  applyFilters();
+                });
+              },
+              itemBuilder: (BuildContext context) => [
+                const PopupMenuItem(value: 'Semua', child: Text('Semua')),
+                const PopupMenuItem(value: 'Menunggu', child: Text('Menunggu')),
+                const PopupMenuItem(value: 'Proses', child: Text('Proses')),
+                const PopupMenuItem(value: 'Selesai', child: Text('Selesai')),
+              ],
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Status',
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Kategori Dropdown
+          Expanded(
+            child: PopupMenuButton<String>(
+              onSelected: (value) {
+                setState(() {
+                  selectedKategori = value;
+                  applyFilters();
+                });
+              },
+              itemBuilder: (BuildContext context) {
+                final items = [
+                  const PopupMenuItem(value: 'Semua', child: Text('Semua')),
+                ];
+                for (var kat in kategoriList) {
+                  items.add(PopupMenuItem(value: kat, child: Text(kat)));
+                }
+                return items;
+              },
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Kategori',
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Tanggal Dropdown
+          Expanded(
+            child: PopupMenuButton<String>(
+              onSelected: (value) {
+                setState(() {
+                  sortBy = value;
+                  applyFilters();
+                });
+              },
+              itemBuilder: (BuildContext context) => [
+                const PopupMenuItem(value: 'Terbaru', child: Text('Terbaru')),
+                const PopupMenuItem(value: 'Terlama', child: Text('Terlama')),
+              ],
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Tanggal',
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // NISN Dropdown
+          Expanded(
+            child: PopupMenuButton<String>(
+              onSelected: (value) {
+                setState(() {
+                  sortBy = 'NIS';
+                  applyFilters();
+                });
+              },
+              itemBuilder: (BuildContext context) => [
+                const PopupMenuItem(value: 'NIS', child: Text('Urutkan NIS')),
+              ],
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'NISN',
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(double horizontalPadding, bool isTablet) {
+    return Column(
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: horizontalPadding,
+            vertical: isTablet ? 20 : 16,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Admin - Aspirasi',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Tooltip(
+                    message: 'Tambah Pengguna',
+                    child: IconButton(
+                      icon: const Icon(Icons.person_add, color: Colors.white),
+                      onPressed: openAddUser,
+                      tooltip: 'Tambah Pengguna Siswa',
+                    ),
+                  ),
+                  Tooltip(
+                    message: 'Tambah Kategori',
+                    child: IconButton(
+                      icon: const Icon(Icons.category, color: Colors.white),
+                      onPressed: openAddKategori,
+                      tooltip: 'Tambah Kategori Aspirasi',
+                    ),
+                  ),
+                  Tooltip(
+                    message: 'Logout',
+                    child: IconButton(
+                      icon: const Icon(Icons.logout, color: Colors.white),
+                      onPressed: logout,
+                      tooltip: 'Keluar dari Sistem',
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const Divider(color: Colors.white54, height: 0),
+      ],
     );
   }
 
