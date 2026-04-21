@@ -241,7 +241,7 @@ class _InputAspirasiPageState extends State<InputAspirasiPage> {
                     const SizedBox(height: 16),
 
                     Text(
-                      'Foto Pendukung (Opsional)',
+                      'Foto Bukti',
                       style: GoogleFonts.poppins(
                         fontWeight: FontWeight.w600,
                         fontSize: labelFontSize,

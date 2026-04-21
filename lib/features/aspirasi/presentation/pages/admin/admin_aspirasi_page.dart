@@ -761,7 +761,11 @@ class _AdminAspirasiPageState extends State<AdminAspirasiPage>
             ],
           ),
           const Spacer(),
-          _headerBtn(Icons.refresh_rounded, load, isSmall),
+          _headerBtn(
+            Icons.category_rounded,
+            openAddKategori,
+            isSmall,
+          ), // Changed from refresh to add category
           const SizedBox(width: 6),
           _headerBtn(Icons.person_add_outlined, openAddUser, isSmall),
           const SizedBox(width: 6),
