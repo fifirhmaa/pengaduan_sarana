@@ -147,7 +147,6 @@ class _DetailAspirasiAdminModalState extends State<DetailAspirasiAdminModal> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Status Section dengan dropdown edit
                     _SectionLabel(label: 'Status'),
                     const SizedBox(height: 8),
                     Container(
@@ -304,7 +303,6 @@ class _DetailAspirasiAdminModalState extends State<DetailAspirasiAdminModal> {
 
                     const SizedBox(height: 20),
 
-                    // Feedback Section dengan edit
                     _SectionLabel(label: 'Feedback'),
                     const SizedBox(height: 8),
                     Container(
