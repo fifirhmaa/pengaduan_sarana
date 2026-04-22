@@ -805,7 +805,7 @@ class _AdminAspirasiPageState extends State<AdminAspirasiPage>
                   fontSize: _fontSize(context, 13),
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Cari NIS, lokasi, keterangan...',
+                  hintText: 'Cari NIS',
                   hintStyle: GoogleFonts.poppins(
                     color: Colors.white60,
                     fontSize: _fontSize(context, 13),
