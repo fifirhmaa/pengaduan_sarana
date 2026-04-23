@@ -765,7 +765,7 @@ class _AdminAspirasiPageState extends State<AdminAspirasiPage>
             Icons.category_rounded,
             openAddKategori,
             isSmall,
-          ), // Changed from refresh to add category
+          ), 
           const SizedBox(width: 6),
           _headerBtn(Icons.person_add_outlined, openAddUser, isSmall),
           const SizedBox(width: 6),
@@ -897,7 +897,7 @@ class _AdminAspirasiPageState extends State<AdminAspirasiPage>
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: 4), 
                   const Icon(
                     Icons.unfold_more_rounded,
                     color: Colors.white,

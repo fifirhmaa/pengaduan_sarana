@@ -45,6 +45,21 @@ class DetailAspirasiModal extends StatelessWidget {
       }
     }
 
+    final buktiFotoData = aspirasi.data['foto_bukti'];
+    List<String> buktiFilenames = [];
+
+    if (buktiFotoData != null) {
+      if (buktiFotoData is List) {
+        for (var foto in buktiFotoData) {
+          if (foto is String && foto.isNotEmpty) {
+            buktiFilenames.add(foto);
+          }
+        }
+      } else if (buktiFotoData is String && buktiFotoData.isNotEmpty) {
+        buktiFilenames = [buktiFotoData];
+      }
+    }
+
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
@@ -157,7 +172,7 @@ class DetailAspirasiModal extends StatelessWidget {
                     const SizedBox(height: 16),
 
                     if (fotoFilenames.isNotEmpty) ...[
-                      _SectionLabel(label: 'Foto'),
+                      _SectionLabel(label: 'Foto Pendukung'),
                       const SizedBox(height: 8),
                       SizedBox(
                         height: 200,
@@ -229,28 +244,153 @@ class DetailAspirasiModal extends StatelessWidget {
                       const SizedBox(height: 16),
                     ],
 
+                    if (buktiFilenames.isNotEmpty && status == 'Selesai') ...[
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.green[50],
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.green[200]!),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.check_circle,
+                                  size: 20,
+                                  color: Colors.green[600],
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Foto Bukti Pengerjaan',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.green[800],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              height: 200,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: buktiFilenames.length,
+                                itemBuilder: (context, index) {
+                                  final buktiUrl = _getFotoUrl(
+                                    buktiFilenames[index],
+                                  );
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 12),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        _showFullImage(context, buktiUrl);
+                                      },
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: Image.network(
+                                          buktiUrl,
+                                          width: 200,
+                                          height: 200,
+                                          fit: BoxFit.cover,
+                                          loadingBuilder:
+                                              (
+                                                context,
+                                                child,
+                                                loadingProgress,
+                                              ) {
+                                                if (loadingProgress == null)
+                                                  return child;
+                                                return Container(
+                                                  width: 200,
+                                                  height: 200,
+                                                  color: Colors.grey[200],
+                                                  child: const Center(
+                                                    child:
+                                                        CircularProgressIndicator(),
+                                                  ),
+                                                );
+                                              },
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                                return Container(
+                                                  width: 200,
+                                                  height: 200,
+                                                  color: Colors.grey[200],
+                                                  child: const Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Icon(
+                                                        Icons.broken_image,
+                                                        size: 48,
+                                                        color: Colors.grey,
+                                                      ),
+                                                      SizedBox(height: 8),
+                                                      Text(
+                                                        'Gagal memuat gambar',
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                          color: Colors.grey,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              },
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+
                     _SectionLabel(label: 'Waktu pengiriman'),
                     const SizedBox(height: 4),
                     _SectionValue(value: tanggal),
 
                     if (feedback.isNotEmpty) ...[
                       const SizedBox(height: 20),
-                      _SectionLabel(label: 'Feedback'),
+                      _SectionLabel(label: 'Feedback dari Admin'),
                       const SizedBox(height: 8),
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: Colors.grey[200],
+                          color: Colors.blue[50],
                           borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.blue[200]!),
                         ),
-                        child: Text(
-                          feedback,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.black87,
-                            height: 1.5,
-                          ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.feedback,
+                              size: 20,
+                              color: Colors.blue[600],
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                feedback,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black87,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
